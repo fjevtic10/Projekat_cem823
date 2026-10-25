@@ -275,19 +275,14 @@ The program prints the number of processed frames and the number of frames witho
 
 **Problems I had.**
 
-* **Bridge and guard rail edges.** On `test1.jpg`, `test4.jpg` and `test5.jpg` their Hough segments pulled the polynomial away from the lane. The two tests in `find_lane_points()` (almost vertical, and ending near the expected x at the bottom) fixed most of it. It is not perfect: on `test1.jpg` and `test4.jpg` the left curve still bends strongly in the upper part, so their radii (226 m and 535 m) are probably too small.
+* **Bridge and guard rail edges.** On `test1.jpg`, `test4.jpg` and `test5.jpg` their Hough segments pulled the polynomial away from the lane. The two tests in `find_lane_points()` (almost vertical, and ending near the expected x at the bottom) fixed most of it. It is not perfect: on `test1.jpg` and `test4.jpg` the left curve still bends strongly in the upper part, so their radiius (226 m and 535 m) are probably too small.
 * **Yellow line in shadow.** On `test5.jpg` it was missed until I lowered the minimum V of the yellow mask to 90.
 * **Black borders after undistorting.** The course example uses `alpha = 1`; I switched to `alpha = 0` and chose the perspective points for that image.
-* **Calibration and perspective points depend on each other.** `SRC` was chosen with an earlier calibration (17 images). With all 20 images the results changed a lot, and the lane width is now 567 to 805 px instead of 680, so `SRC` is not perfect for this calibration.
 * **Jumping lane in the video.** A single fit jumped between frames, so I added averaging of the last five fits and the check of the lane width.
-* **OpenCV versions.** `cv.HoughLinesP` returns segments in a different array shape in different versions, so I read them with `np.asarray(line).reshape(-1)[:4]`.
 
 **Where the pipeline will likely fail.**
 
 * **Lane paint that is not white or yellow.** The binary image comes only from the color masks. On the course video `examples/example.mp4`, where the lines are red, the lane was not found in most frames.
-* **Bright things that are not paint**, like light concrete or white cars, pass the white mask. This may be a reason for the poor fit on `challange00101.jpg` (I did not check it separately).
 * **Short or partly visible lines.** Each side has its own polynomial, so it can bend strongly outside of the visible piece.
-* **Different cameras and conditions.** The calibration, the region of interest, the perspective points and the color thresholds are fixed for one camera and 1280x720 images. Shadows, night, rain, hills and bumps will cause problems.
-* **Numbers in meters.** The 30 m road length and the 3.7 m lane width are assumptions, so the radius and the offset are only estimates.
 
 
